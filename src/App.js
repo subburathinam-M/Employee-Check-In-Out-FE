@@ -34,19 +34,18 @@ function App() {
     }
   };
 
-  const fetchAll = async () => {
+  const fetchAll = useCallback(async () => {
     try {
       const res = await axios.get(`${API_URL}/findAll`);
       setEmployees(res.data);
     } catch (err) {
       console.error(err);
-      alert(`Error: ${err.message}`);
     }
-  };
-
+  }, [API_URL]); // include any used vars
+  
   useEffect(() => {
     fetchAll();
-  }, []);
+  }, [fetchAll]);
 
   return (
     <div style={{ padding: 20 }}>
