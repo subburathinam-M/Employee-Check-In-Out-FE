@@ -5,7 +5,10 @@ function App() {
   const [empId, setEmpId] = useState('');
   const [employees, setEmployees] = useState([]);
 
-  const API_URL = 'http://localhost:8080/api/emp'; // adjust port if needed
+  // const API_URL = 'http://localhost:8080/api/emp'; // adjust port if needed
+
+  const API_URL = 'https://employee-check-in-out-be.onrender.com/api/emp';
+
 
   const handleCheckIn = async () => {
     try {
