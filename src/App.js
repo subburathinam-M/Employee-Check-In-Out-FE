@@ -5,28 +5,32 @@ function App() {
   const [empId, setEmpId] = useState('');
   const [employees, setEmployees] = useState([]);
 
-  // const API_URL = 'http://localhost:8080/api/emp'; // adjust port if needed
-
-  const API_URL = 'https://employee-check-in-out-be.onrender.com/api/emp';
-
+  // Automatically choose local or deployed backend
+  const API_URL = window.location.hostname === 'localhost'
+    ? 'http://localhost:8080/api/emp'
+    : 'https://employee-check-in-out-be.onrender.com/api/emp';
 
   const handleCheckIn = async () => {
     try {
-      const res = await axios.post(`${API_URL}/checkIn`, { id: empId });
+      // ✅ Send employeeId not id
+      const res = await axios.post(`${API_URL}/checkIn`, { employeeId: empId });
       alert(`Checked In: ${JSON.stringify(res.data)}`);
       fetchAll();
     } catch (err) {
       console.error(err);
+      alert(`Error: ${err.message}`);
     }
   };
 
   const handleCheckOut = async () => {
     try {
-      const res = await axios.post(`${API_URL}/checkOut`, { id: empId });
+      // ✅ Send employeeId not id
+      const res = await axios.post(`${API_URL}/checkOut`, { employeeId: empId });
       alert(`Checked Out: ${JSON.stringify(res.data)}`);
       fetchAll();
     } catch (err) {
       console.error(err);
+      alert(`Error: ${err.message}`);
     }
   };
 
@@ -36,6 +40,7 @@ function App() {
       setEmployees(res.data);
     } catch (err) {
       console.error(err);
+      alert(`Error: ${err.message}`);
     }
   };
 
@@ -59,7 +64,8 @@ function App() {
       <table border="1">
         <thead>
           <tr>
-            <th>ID</th>
+            <th>_id</th>
+            <th>Employee ID</th>
             <th>Date</th>
             <th>Check In</th>
             <th>Check Out</th>
@@ -69,6 +75,7 @@ function App() {
           {employees.map(emp => (
             <tr key={`${emp.id}-${emp.date}`}>
               <td>{emp.id}</td>
+              <td>{emp.employeeId}</td>
               <td>{emp.date}</td>
               <td>{emp.checkIn}</td>
               <td>{emp.checkOut}</td>
