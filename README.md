@@ -1,4 +1,5 @@
 <<<<<<< HEAD
+<<<<<<< HEAD
 # Employee-Check-In-Out-FE
 =======
 # Getting Started with Create React App
@@ -72,3 +73,6 @@ This section has moved here: [https://facebook.github.io/create-react-app/docs/d
 
 This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
 >>>>>>> 088f335 (Initialize project using Create React App)
+=======
+# Employee-Check-In-Out-FE
+>>>>>>> f1659ce6677c9d09bdc0ffe4fa756b8e67e30ce4
