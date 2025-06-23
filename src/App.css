@@ -1,38 +1,129 @@
-.App {
+
+body {
+  font-family: Arial, sans-serif;
+  background: hsl(216, 33%, 97%);
+  color: #333;
+    /* Use Flexbox to center everything */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh; /* Full screen height */
+    margin: 0;
+}
+
+.container {
+  width: 100%;
+  max-width: 800px;
+  background: #fff;
+  padding: 30px;
+  border-radius: 8px;
+  box-shadow: 0 0 10px rgba(0,0,0,0.1);
+}
+
+h2 {
+  text-align: center;
+  color: #0077cc;
+}
+
+input {
+  padding: 10px;
+  width: 200px;
+  margin-right: 10px;
+}
+
+button {
+  padding: 10px 15px;
+  margin-right: 10px;
+  border: none;
+  border-radius: 4px;
+  background: #0077cc;
+  color: #fff;
+  cursor: pointer;
+}
+
+button:hover {
+  background: #005fa3;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 20px;
+}
+
+.table-wrapper {
+  max-height: 400px; /* adjust height as you like */
+  overflow-y: auto;  /* vertical scroll */
+}
+
+th, td {
+  padding: 12px;
+  border: 1px solid #ddd;
   text-align: center;
 }
 
-.App-logo {
-  height: 40vmin;
-  pointer-events: none;
+th {
+  background: #0077cc;
+  color: #fff;
 }
 
-@media (prefers-reduced-motion: no-preference) {
-  .App-logo {
-    animation: App-logo-spin infinite 20s linear;
-  }
+tr:nth-child(even) {
+  background: #f9f9f9;
 }
 
-.App-header {
-  background-color: #282c34;
-  min-height: 100vh;
+.delete-btn {
+  background: #cc0000;
+}
+
+.delete-btn:hover {
+  background: #a00000;
+}
+
+
+
+
+/* Style the popup box */
+.my-swal-popup {
+  border-radius: 15px;
+  padding: 30px;
+  font-family: Arial, sans-serif;
+}
+
+/* Style the title */
+.my-swal-title {
+  color: #0077cc;
+  font-weight: bold;
+}
+
+/* Style the HTML content */
+.my-swal-html {
+  font-size: 16px;
+  color: #333;
+}
+
+/* Style the confirm button */
+.my-swal-button {
+  background: #0077cc !important;
+  color: #fff !important;
+  border-radius: 4px !important;
+  padding: 10px 20px !important;
+}
+
+.actions {
   display: flex;
-  flex-direction: column;
   align-items: center;
-  justify-content: center;
-  font-size: calc(10px + 2vmin);
-  color: white;
+  gap: 10px; /* spacing between items */
+  margin-bottom: 20px; /* space below the group */
 }
 
-.App-link {
-  color: #61dafb;
+.actions input {
+  padding: 10px;
 }
 
-@keyframes App-logo-spin {
-  from {
-    transform: rotate(0deg);
-  }
-  to {
-    transform: rotate(360deg);
-  }
+.actions button {
+  padding: 10px 15px;
+}
+
+.actions .form {
+  margin-left: 10px; /* adjust if needed */
 }

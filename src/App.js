@@ -1,39 +1,164 @@
 import React, { useState, useEffect, useCallback } from 'react';
-
+import './index.css';
 import axios from 'axios';
+import Swal from 'sweetalert2';
+// import 'sweetalert2/dist/sweetalert2.min.css';
+// import './App.css';
+
+import Search from './components/search';
+
 
 function App() {
   const [empId, setEmpId] = useState('');
   const [employees, setEmployees] = useState([]);
+  const [searchTerm, setSearchTerm] = useState(''); // NEW
 
   // Automatically choose local or deployed backend
   const API_URL = window.location.hostname === 'localhost'
     ? 'http://localhost:8080/api/emp'
     : 'https://employee-check-in-out-be.onrender.com/api/emp';
 
-  const handleCheckIn = async () => {
-    try {
-      // ✅ Send employeeId not id
-      const res = await axios.post(`${API_URL}/checkIn`, { employeeId: empId });
-      alert(`Checked In: ${JSON.stringify(res.data)}`);
-      fetchAll();
-    } catch (err) {
-      console.error(err);
-      alert(`Error: ${err.message}`);
-    }
-  };
+  
+    const swalWithTailwindButtons = Swal.mixin({
+      customClass: {
+        confirmButton: 'px-4 py-2 rounded-md bg-[#0077cc] text-white hover:bg-[#005fa3]',
+        cancelButton: 'px-4 py-2 rounded-md bg-gray-300 text-gray-700 hover:bg-gray-400',
+        actions: 'flex gap-4 justify-center'  // <-- THIS adds spacing!
+      },
+      buttonsStyling: false
+    });
+    
+    
+    
 
-  const handleCheckOut = async () => {
+  // const handleCheckIn = async () => {
+  //   const cleanId = empId.trim().toUpperCase();
+  //   if (!cleanId) {
+  //     alert("Please enter the Employee ID.");
+  //     return;
+  //   }
+    
+  //   try {
+  //     // ✅ Send employeeId not id
+  //     const res = await axios.post(`${API_URL}/checkIn`, { employeeId: cleanId });
+  //     alert(`Checked In: ${JSON.stringify(res.data)}`);
+  //     fetchAll();
+  //   } catch (err) {
+  //     console.error(err);
+  //     alert(`Error: ${err.message}`);
+  //   }
+  // };
+
+  // const handleCheckOut = async () => {
+  //   const cleanId = empId.trim().toUpperCase();
+  //   if (!cleanId) {
+  //     alert("Please enter the Employee ID.");
+  //     return;
+  //   }
+    
+  //   try {
+  //     // ✅ Send employeeId not id
+  //     const res = await axios.post(`${API_URL}/checkOut`, { employeeId: cleanId });
+  //     alert(`Checked Out: ${JSON.stringify(res.data)}`);
+  //     fetchAll();
+  //   } catch (err) {
+  //     console.error(err);
+  //     alert(`Error: ${err.message}`);
+  //   }
+  // };
+
+
+
+  const handleCheckIn = async () => {
+    const cleanId = empId.trim().toUpperCase();
+    if (!cleanId) {
+      Swal.fire({ 
+        icon: 'warning',
+        title: 'Missing ID',
+        text: 'Please enter the Employee ID.',
+        customClass: {
+          popup: 'rounded-[15px] p-8 font-sans',
+          title: 'text-[#0077cc] font-bold',
+          htmlContainer: 'text-[16px] text-gray-800',
+          confirmButton: 'bg-[#0077cc] text-white rounded-md px-5 py-2 !important'
+        }
+        
+      });
+      return;
+    }
+  
     try {
-      // ✅ Send employeeId not id
-      const res = await axios.post(`${API_URL}/checkOut`, { employeeId: empId });
-      alert(`Checked Out: ${JSON.stringify(res.data)}`);
+      const res = await axios.post(`${API_URL}/checkIn`, { employeeId: cleanId });
+      // Show SweetAlert with ID & Check-In time
+      Swal.fire({
+        icon: 'success',
+        title: 'Check-In Successful!',
+        html: `<b>Employee ID:</b> ${res.data.employeeId}<br>
+              <b>Check-In Time:</b> ${res.data.checkIn}`,
+              customClass: {
+                popup: 'rounded-[15px] p-8 font-sans',
+                title: 'text-[#0077cc] font-bold',
+                htmlContainer: 'text-[16px] text-gray-800',
+                confirmButton: 'bg-[#0077cc] text-white rounded-md px-5 py-2 !important'
+              }
+              
+      });
       fetchAll();
     } catch (err) {
       console.error(err);
-      alert(`Error: ${err.message}`);
+      Swal.fire({
+        icon: 'error',
+        title: 'Error',
+        text: err.message
+      });
     }
   };
+  
+  const handleCheckOut = async () => {
+    const cleanId = empId.trim().toUpperCase();
+    if (!cleanId) {
+      Swal.fire({
+        icon: 'warning',
+        title: 'Missing ID',
+        text: 'Please enter the Employee ID.',
+        customClass: {
+          popup: 'rounded-[15px] p-8 font-sans',
+          title: 'text-[#0077cc] font-bold',
+          htmlContainer: 'text-[16px] text-gray-800',
+          confirmButton: 'bg-[#0077cc] text-white rounded-md px-5 py-2 !important'
+        }
+        
+      });
+      return;
+    }
+  
+    try {
+      const res = await axios.post(`${API_URL}/checkOut`, { employeeId: cleanId });
+      // Show SweetAlert with ID & Check-Out time
+      Swal.fire({
+        icon: 'success',
+        title: 'Check-Out Successful!',
+        html: `<b>Employee ID:</b> ${res.data.employeeId}<br>
+              <b>Check-Out Time:</b> ${res.data.checkOut}`,
+              customClass: {
+                popup: 'rounded-[15px] p-8 font-sans',
+                title: 'text-[#0077cc] font-bold',
+                htmlContainer: 'text-[16px] text-gray-800',
+                confirmButton: 'bg-[#0077cc] text-white rounded-md px-5 py-2 !important'
+              }
+              
+      });
+      fetchAll();
+    } catch (err) {
+      console.error(err);
+      Swal.fire({
+        icon: 'error',
+        title: 'Error',
+        text: err.message
+      });
+    }
+  };
+  
 
   const fetchAll = useCallback(async () => {
     try {
@@ -48,43 +173,183 @@ function App() {
     fetchAll();
   }, [fetchAll]);
 
-  return (
-    <div style={{ padding: 20 }}>
-      <h2>Employee Check In/Out</h2>
-      <input 
-        type="text" 
-        placeholder="Enter Employee ID" 
-        value={empId}
-        onChange={(e) => setEmpId(e.target.value)}
-      />
-      <button onClick={handleCheckIn}>Check In</button>
-      <button onClick={handleCheckOut}>Check Out</button>
 
-      <h3>All Records:</h3>
-      <table border="1">
-        <thead>
-          <tr>
-            <th>_id</th>
-            <th>Employee ID</th>
-            <th>Date</th>
-            <th>Check In</th>
-            <th>Check Out</th>
-          </tr>
-        </thead>
-        <tbody>
-          {employees.map(emp => (
-            <tr key={`${emp.id}-${emp.date}`}>
-              <td>{emp.id}</td>
-              <td>{emp.employeeId}</td>
-              <td>{emp.date}</td>
-              <td>{emp.checkIn}</td>
-              <td>{emp.checkOut}</td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
-    </div>
-  );
+  // const handleDelete = async (id) => {
+    
+  //   if (window.confirm("Are you sure?")) {
+  //     try {
+  //       await axios.delete(`${API_URL}/delete/${id}`);
+  //       fetchAll();
+  //     } catch (err) {
+  //       console.error(err);
+  //       alert("Delete failed");
+  //     }
+  //   }
+  // };
+
+  const handleDelete = async (id) => {
+    const emp = employees.find(e => e.id === id);
+    const empIdToDelete = emp ? emp.employeeId : 'Unknown';
+  
+    swalWithTailwindButtons.fire({
+      title: 'Are you sure?',
+      html: `You are about to delete <b>Employee ID:</b> ${empIdToDelete}`,
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonText: 'Yes, delete it!',
+      cancelButtonText: 'No, cancel!',
+      reverseButtons: true,
+      customClass: {
+        popup: 'rounded-[15px] p-8 font-sans',         // Rounded + padding + font
+        title: 'text-[#0077cc] font-bold',             // Blue title
+        htmlContainer: 'text-[16px] text-gray-800',    // Content text
+        actions: 'flex gap-4 justify-center',          // Space between buttons
+        confirmButton: 'px-4 py-2 rounded-md bg-[#0077cc] text-white hover:bg-[#005fa3]',
+        cancelButton: 'px-4 py-2 rounded-md bg-gray-300 text-gray-700 hover:bg-gray-400'
+      },
+      buttonsStyling: false
+      
+    }).then(async (result) => {
+      if (result.isConfirmed) {
+        try {
+          await axios.delete(`${API_URL}/delete/${id}`);
+          fetchAll();
+          swalWithTailwindButtons.fire({
+            icon: 'success',
+            title: 'Deleted!',
+            html: `Employee ID: <b>${empIdToDelete}</b> has been deleted.`,
+            showConfirmButton: true,
+            confirmButtonText: 'OK',
+            customClass: {
+              popup: 'rounded-[15px] p-8 font-sans',
+              title: 'text-[#0077cc] font-bold',
+              htmlContainer: 'text-[16px] text-gray-800',
+              confirmButton: 'px-4 py-2 rounded-md bg-[#0077cc] text-white hover:bg-[#005fa3]'
+            }
+          });
+        } catch (err) {
+          console.error(err);
+          swalWithTailwindButtons.fire({
+            icon: 'error',
+            title: 'Delete failed',
+            text: err.message,
+            showConfirmButton: true,
+            confirmButtonText: 'OK',
+            customClass: {
+              popup: 'rounded-[15px] p-8 font-sans',
+              title: 'text-[#0077cc] font-bold',
+              htmlContainer: 'text-[16px] text-gray-800',
+              confirmButton: 'px-4 py-2 rounded-md bg-[#0077cc] text-white hover:bg-[#005fa3]'
+            }
+          });
+        }
+      } else if (result.dismiss === Swal.DismissReason.cancel) {
+        swalWithTailwindButtons.fire({
+          icon: 'error',
+          title: 'Cancelled',
+          text: 'Deletion cancelled.',
+          showConfirmButton: true,
+          confirmButtonText: 'OK',
+          customClass: {
+            popup: 'rounded-[15px] p-8 font-sans',
+            title: 'text-[#0077cc] font-bold',
+            htmlContainer: 'text-[16px] text-gray-800',
+            confirmButton: 'px-4 py-2 rounded-md bg-[#0077cc] text-white hover:bg-[#005fa3]'
+          }
+        });
+      }
+    });
+  };
+  
+  
+  
+ // NEW: filter employees by search term
+ const filteredEmployees = employees.filter(emp =>
+  emp.employeeId.toLowerCase().includes(searchTerm.toLowerCase())
+);
+
+  return (
+      <div className="min-h-screen flex items-center justify-center bg-slate-100 px-4">
+        <div className="w-full max-w-4xl bg-white p-6 sm:p-8 rounded-lg shadow-md">
+          <h2 className="text-2xl sm:text-3xl font-bold text-blue-600 text-center mb-6">
+            Employee Check In/Out
+          </h2>
+    
+          {/* Actions: input + buttons + search */}
+          <div className="flex flex-col sm:flex-row sm:flex-wrap gap-3 mb-5">
+            <input 
+              type="text" 
+              placeholder="Enter Employee ID" 
+              value={empId}
+              onChange={(e) => setEmpId(e.target.value)}
+              required
+              className="px-4 py-2 w-full sm:w-48 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+            />
+            <button 
+              onClick={handleCheckIn}
+              className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-md w-full sm:w-auto"
+            >
+              Check In
+            </button>
+            <button 
+              onClick={handleCheckOut}
+              className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-md w-full sm:w-auto"
+            >
+              Check Out
+            </button>
+            <Search 
+              value={searchTerm} 
+              onChange={(e) => setSearchTerm(e.target.value)} 
+              className="w-full sm:w-auto"
+            />
+          </div>
+    
+          <h3 className="text-lg font-semibold mb-3">All Records:</h3>
+    
+          {/* Table with horizontal scroll on small screens */}
+          <div className="overflow-x-auto max-h-[400px] border rounded-md">
+            <table className="w-full min-w-[700px] border-collapse">
+              <thead>
+                <tr className="bg-blue-600 text-white">
+                  <th className="py-3 px-4 border">Employee ID</th>
+                  <th className="py-3 px-4 border">Date</th>
+                  <th className="py-3 px-4 border">Check In</th> 
+                  <th className="py-3 px-4 border">Check Out</th>
+                  <th className="py-3 px-4 border">Status</th>
+                  <th className="py-3 px-4 border">Action</th>
+                </tr>
+              </thead>
+              <tbody>
+                {filteredEmployees.map(emp => (
+                  <tr key={`${emp.id}-${emp.date}`} className="even:bg-gray-100">
+                    <td className="py-2 px-4 border">{emp.employeeId}</td>
+                    <td className="py-2 px-4 border">{emp.date}</td>
+                    <td className="py-2 px-4 border">{emp.checkIn}</td>
+                    <td className="py-2 px-4 border">{emp.checkOut}</td>
+                    <td className="py-2 px-4 border">
+                      {emp.checkOut ? (
+                        <span className="text-red-600 font-semibold">Checked Out</span>
+                      ) : (
+                        <span className="text-green-600 font-semibold">In Office</span>
+                      )}
+                    </td>
+                    <td className="py-2 px-4 border">
+                      <button 
+                        className="bg-red-600 hover:bg-red-700 text-white px-3 py-1 rounded-md"
+                        onClick={() => handleDelete(emp.id)}
+                      >
+                        Delete
+                      </button>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    );
+    
 }
 
 export default App;
