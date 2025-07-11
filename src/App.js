@@ -189,13 +189,18 @@ const [totalElements, setTotalElements] = useState(0);
       const res = await axios.get(`${API_URL}/findAll`, {
         params: { page, size, sortField, sortDir, searchTerm }
       });
-      setEmployees(res.data.content);
-      setTotalPages(res.data.totalPages);
-      setTotalElements(res.data.totalElements); // ✅ Add this
+  
+      const content = Array.isArray(res.data.content) ? res.data.content : [];
+  
+      setEmployees(content);
+      setTotalPages(res.data.totalPages || 1);
+      setTotalElements(res.data.totalElements || 0);
     } catch (err) {
-      console.error(err);
+      console.error("Fetch error:", err);
+      setEmployees([]); // prevent crash
     }
   }, [API_URL, page, size, sortField, sortDir, searchTerm]);
+  
 
 
   useEffect(() => {
