@@ -13,6 +13,16 @@ function App() {
   const [employees, setEmployees] = useState([]);
   const [searchTerm, setSearchTerm] = useState(''); // NEW
 
+
+const [page, setPage] = useState(0);
+const [size, setSize] = useState(5);
+const [sortField, setSortField] = useState("date");
+const [sortDir, setSortDir] = useState("desc");
+const [totalPages, setTotalPages] = useState(1);
+const [totalElements, setTotalElements] = useState(0);
+
+
+
   // Automatically choose local or deployed backend
   const API_URL = window.location.hostname === 'localhost'
     ? 'http://localhost:8080/api/emp'
@@ -160,19 +170,37 @@ function App() {
   };
   
 
+  // const fetchAll = useCallback(async () => {
+  //   try {
+  //     const res = await axios.get(`${API_URL}/findAll`);
+  //     setEmployees(res.data);
+  //   } catch (err) {
+  //     console.error(err);
+  //   }
+  // }, [API_URL]); // include any used vars
+  
+  // useEffect(() => {
+  //   fetchAll();
+  // }, [fetchAll]);
+
+
   const fetchAll = useCallback(async () => {
     try {
-      const res = await axios.get(`${API_URL}/findAll`);
-      setEmployees(res.data);
+      const res = await axios.get(`${API_URL}/findAll`, {
+        params: { page, size, sortField, sortDir, searchTerm }
+      });
+      setEmployees(res.data.content);
+      setTotalPages(res.data.totalPages);
+      setTotalElements(res.data.totalElements); // ✅ Add this
     } catch (err) {
       console.error(err);
     }
-  }, [API_URL]); // include any used vars
-  
+  }, [API_URL, page, size, sortField, sortDir, searchTerm]);
+
+
   useEffect(() => {
     fetchAll();
   }, [fetchAll]);
-
 
   // const handleDelete = async (id) => {
     
@@ -264,9 +292,9 @@ function App() {
   
   
  // NEW: filter employees by search term
- const filteredEmployees = employees.filter(emp =>
-  emp.employeeId.toLowerCase().includes(searchTerm.toLowerCase())
-);
+//  const filteredEmployees = employees.filter(emp =>
+//   emp.employeeId.toLowerCase().includes(searchTerm.toLowerCase())
+// );
 
   return (
       <div className="min-h-screen flex items-center justify-center bg-slate-100 px-4">
@@ -312,7 +340,25 @@ function App() {
               <thead>
                 <tr className="bg-blue-600 text-white">
                   <th className="py-3 px-4 border">Employee ID</th>
-                  <th className="py-3 px-4 border">Date</th>
+                  {/* <th className="py-3 px-4 border">Date</th> */}
+                  
+                <th
+  className="py-3 px-4 border cursor-pointer hover:bg-blue-700"
+  onClick={() => {
+    if (sortField === "date") {
+      setSortDir(prev => (prev === "asc" ? "desc" : "asc"));
+    } else {
+      setSortField("date");
+      setSortDir("asc"); // default when changing field
+    }
+  }}
+>
+  Date
+  {sortField === "date" && (
+    <span className="ml-1">{sortDir === "asc" ? "⬆️" : "⬇️"}</span>
+  )}
+</th>
+
                   <th className="py-3 px-4 border">Check In</th> 
                   <th className="py-3 px-4 border">Check Out</th>
                   <th className="py-3 px-4 border">Status</th>
@@ -320,7 +366,7 @@ function App() {
                 </tr>
               </thead>
               <tbody>
-                {filteredEmployees.map(emp => (
+                {employees.map(emp => (
                   <tr key={`${emp.id}-${emp.date}`} className="even:bg-gray-100">
                     <td className="py-2 px-4 border">{emp.employeeId}</td>
                     <td className="py-2 px-4 border">{emp.date}</td>
@@ -346,6 +392,53 @@ function App() {
               </tbody>
             </table>
           </div>
+
+
+         {/* Pagination Controls */}
+<div className="flex flex-col sm:flex-row sm:justify-between sm:items-center mt-6 gap-4">
+  
+  {/* Left: Pagination Buttons */}
+  <div className="flex items-center gap-3 justify-center sm:justify-start">
+    <button
+      disabled={page === 0}
+      onClick={() => setPage(prev => Math.max(prev - 1, 0))}
+      className="px-4 py-2 rounded-lg bg-gray-200 text-gray-800 hover:bg-gray-300 disabled:opacity-50 disabled:cursor-not-allowed transition"
+    >
+      ⬅ Prev
+    </button>
+    <span className="text-gray-700 font-medium">
+      Page <span className="text-blue-600">{page + 1}</span> of <span className="text-blue-600">{totalPages}</span>
+    </span>
+    <button
+      disabled={page >= totalPages - 1}
+      onClick={() => setPage(prev => prev + 1)}
+      className="px-4 py-2 rounded-lg bg-gray-200 text-gray-800 hover:bg-gray-300 disabled:opacity-50 disabled:cursor-not-allowed transition"
+    >
+      Next ➡
+    </button>
+  </div>
+
+  {/* Right: Page Size + Total Count */}
+  <div className="flex flex-col sm:flex-row sm:items-center gap-2 justify-center sm:justify-end">
+    <div className="flex items-center gap-2">
+      <label htmlFor="pageSize" className="text-sm text-gray-700">Rows per page:</label>
+      <select
+        id="pageSize"
+        value={size}
+        onChange={(e) => setSize(Number(e.target.value))}
+        className="border border-gray-300 rounded-md px-3 py-1 focus:outline-none focus:ring-2 focus:ring-blue-500"
+      >
+        <option value="5">5</option>
+        <option value="10">10</option>
+        <option value="20">20</option>
+      </select>
+    </div>
+    <div className="text-sm text-gray-600 text-center sm:text-right">
+      Total: <span className="font-semibold text-blue-600">{totalElements}</span> records
+    </div>
+  </div>
+</div>
+
         </div>
       </div>
     );
